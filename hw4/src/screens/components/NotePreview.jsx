@@ -1,7 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, Button, Alert } from "react-native";
 
-const NotePreview = ({ note, navigation, deleteNote, editNote }) => {
+import { connect } from "react-redux";
+import { deleteNote } from "../../redux/actions";
+
+const NotePreview = ({ deleteNote, note, navigation }) => {
     const handleDeleteButton = () => {
         Alert.alert(
             `Do you really want to delete note "${note.title}"?`,
@@ -35,7 +38,7 @@ const NotePreview = ({ note, navigation, deleteNote, editNote }) => {
                 </View>
             </View>
             <View style={styles.buttonContainer}>
-                <Button title="Open" onPress={() => navigation.navigate('Note', { note: note, editNote: editNote })} color="#f194ff" />
+                <Button title="Open" onPress={() => navigation.navigate('Note', { note: note })} color="#f194ff" />
                 <Button title="Delete" onPress={handleDeleteButton} color="red" />
             </View>
         </View>
@@ -81,4 +84,8 @@ const styles = StyleSheet.create({
     }
 });
 
-export default NotePreview;
+const mapDispatchToProps = {
+    deleteNote,
+};
+
+export default connect(null, mapDispatchToProps)(NotePreview);

@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { View, Text, Image, StyleSheet, TextInput, Button } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
-const NoteScreen = ({ route, navigation }) => {
-    const { note, editNote } = route.params;
+import { connect } from "react-redux";
+import { editNote } from "../redux/actions";
+
+const NoteScreen = ({ editNote, route, navigation }) => {
+    const { note } = route.params;
     const [isEditMode, setIsEditMode] = useState(false);
     const [newTitle, setNewTitle] = useState(note.title);
     const [newContent, setNewContent] = useState(note.content);
@@ -16,7 +19,7 @@ const NoteScreen = ({ route, navigation }) => {
             aspect: [4, 3],
             quality: 1,
         });
-    
+
         if (!result.cancelled) {
             setNewUriImage(result.uri);
         }
@@ -30,25 +33,24 @@ const NoteScreen = ({ route, navigation }) => {
                 title: newTitle,
                 content: newContent,
             });
-            // navigation.navigate("Notes");
         }
-        
+
         setIsEditMode(!isEditMode);
     }
 
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
-                headerRight: () => (
-                <Button onPress={() => {toggleEditMode()}} title={!isEditMode ? "Edit" : "Save"} />
+            headerRight: () => (
+                <Button onPress={() => { toggleEditMode() }} title={!isEditMode ? "Edit" : "Save"} />
             ),
         });
     }, [isEditMode, newTitle, newContent, newUriImage]);
 
     return (
-        <>
+        <View style={styles.container}>
             {!isEditMode ? (
-                <View style={styles.container}>
+                <>
                     <Text style={styles.title}>
                         {newTitle}
                     </Text>
@@ -56,16 +58,16 @@ const NoteScreen = ({ route, navigation }) => {
                         {newContent}
                     </Text>
                     <Image source={{ uri: newUriImage }} style={styles.image} />
-                </View>) : (
-                <View style={styles.container}>
-                    <TextInput style={{...styles.title, ...styles.editTextInput}} value={newTitle} onChangeText={setNewTitle} placeholder="Change the title..." />
-                    <TextInput style={{...styles.content, ...styles.editTextInput}} value={newContent} onChangeText={setNewContent} placeholder="Change the content..." />
+                </>
+            ) : (
+                <>
+                    <TextInput style={{ ...styles.title, ...styles.editTextInput }} value={newTitle} onChangeText={setNewTitle} placeholder="Change the title..." />
+                    <TextInput style={{ ...styles.content, ...styles.editTextInput }} value={newContent} onChangeText={setNewContent} placeholder="Change the content..." />
                     {newUriImage ? <Image source={{ uri: newUriImage }} style={styles.image} /> : null}
                     <Button title="Pick an image from camera roll" onPress={pickImage} />
-                </View>)
-            }
-        </>
-    );
+                </>
+            )}
+        </View>);
 }
 
 const styles = StyleSheet.create({
@@ -92,4 +94,8 @@ const styles = StyleSheet.create({
     }
 });
 
-export default NoteScreen;
+const mapDispatchToProps = {
+    editNote,
+};
+
+export default connect(null, mapDispatchToProps)(NoteScreen);
