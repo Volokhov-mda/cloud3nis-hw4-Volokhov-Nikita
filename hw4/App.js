@@ -7,17 +7,26 @@ import CreateNoteScreen from './src/screens/CreateNoteScreen';
 import NoteScreen from './src/screens/NoteScreen';
 import NotesScreen from './src/screens/NotesScreen';
 
+import { Provider } from 'react-redux';
+
+import { store, saga } from './src/redux/store';
+import { sagaWatcher } from './src/redux/sagas';
+
 const Stack = createNativeStackNavigator();
+
+saga.run(sagaWatcher);
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Notes" component={NotesScreen} />
-        <Stack.Screen name="Create Note" component={CreateNoteScreen} />
-        <Stack.Screen name="Note" component={NoteScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Notes" component={NotesScreen} />
+          <Stack.Screen name="Create Note" component={CreateNoteScreen} />
+          <Stack.Screen name="Note" component={NoteScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

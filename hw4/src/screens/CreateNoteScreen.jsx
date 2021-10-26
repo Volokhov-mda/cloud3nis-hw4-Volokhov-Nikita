@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { Button, TextInput, View, Image, StyleSheet, Alert } from "react-native";
 import * as ImagePicker from 'expo-image-picker';
 
-const CreateNoteScreen = ({ route, navigation }) => {
-    const { handleCreateNote } = route.params;
+import { connect } from "react-redux";
+import { createNote } from "./../redux/actions.js"
+
+const CreateNoteScreen = ({ createNote, route, navigation }) => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [imageUri, setImageUri] = useState("");
@@ -15,14 +17,14 @@ const CreateNoteScreen = ({ route, navigation }) => {
             aspect: [4, 3],
             quality: 1,
         });
-    
+
         if (!result.cancelled) {
             setImageUri(result.uri);
         }
     };
 
     const onPressCreate = () => {
-        if (title.length === 0) {
+        if (title.trim().length === 0) {
             Alert.alert(
                 `You can't create note without a title`,
                 "",
@@ -35,18 +37,24 @@ const CreateNoteScreen = ({ route, navigation }) => {
 
             return;
         }
-        handleCreateNote({
+        createNote({
             id: Date.now(),
             imageUri: imageUri,
-            title: title,
-            content: content,
+            title: title.trim(),
+            content: content.trim(),
         });
+        // handleCreateNote({
+        //     id: Date.now(),
+        //     imageUri: imageUri,
+        //     title: title,
+        //     content: content,
+        // });
         navigation.goBack();
     };
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
-                headerRight: () => (
+            headerRight: () => (
                 <Button onPress={onPressCreate} title="Create" />
             ),
         });
@@ -82,4 +90,8 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CreateNoteScreen;
+const mapDispatchToProps = {
+    createNote,
+};
+
+export default connect(null, mapDispatchToProps)(CreateNoteScreen);
